@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>enabled</key>
+	<true/>
+
+  <key>EnabledSwitch</key>
+  <true/>
+  <key>NumOptions</key>
+  <integer>3</integer>
+  <key>CellHeight</key>
+  <integer>40</integer>
+  <key>SepWidth</key>
+  <integer>80</integer>
+  <key>WindowWidth</key>
+  <integer>40</integer>
+  <key>FontMultiplier</key>
+  <integer>50</integer>
+	<key>BackgroundColor</key>
+	<string>#0e0e0e:0.8f</string>
+  <key>BorderColor</key>
+  <string>#ffffff</string>
+  <key>SeparatorColor</key>
+  <string>#808080</string>
+
+</dict>
+</plist>

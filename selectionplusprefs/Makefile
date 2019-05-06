@@ -1,10 +1,11 @@
 include $(THEOS)/makefiles/common.mk
 
 BUNDLE_NAME = SelectionPlusPrefs
-SelectionPlusPrefs_FILES = SelectionPlusPrefsRootListController.m
+SelectionPlusPrefs_FILES = UIColor.m SelectionPlusPrefsRootListController.m ColorPickerCell.m
 SelectionPlusPrefs_INSTALL_PATH = /Library/PreferenceBundles
 SelectionPlusPrefs_FRAMEWORKS = UIKit
 SelectionPlusPrefs_PRIVATE_FRAMEWORKS = Preferences
+SelectionPlusPrefs_LIBRARIES = colorpicker
 
 include $(THEOS_MAKE_PATH)/bundle.mk
 

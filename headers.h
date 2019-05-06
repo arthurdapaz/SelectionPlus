@@ -1,5 +1,6 @@
 #import <UIKit/UIKit.h>
 // #include <execinfo.h>
+#import <libcolorpicker.h>
 
 // @interface UIMenuController : UIView
 // @end
@@ -27,6 +28,9 @@ static UIView* viewWithTag(UIView* superview, int tag);
 
 
 static float MAX_DEFAULT_HEIGHT();
+static UIColor* sepColor();
+static UIColor* borderColor();
+static UIColor* bgColor();
 
 @interface UIButtonLabel : UILabel
 @end
@@ -58,7 +62,7 @@ static float MAX_DEFAULT_HEIGHT();
 
 @end
 
-
+static UIFont* findAdaptiveFontWithName(NSString *fontName, CGSize labelSize, NSInteger minSize, float multiplier);
 
 @interface UICalloutBarBackground : UIView {
 	bool m_isDisplayingVertically;

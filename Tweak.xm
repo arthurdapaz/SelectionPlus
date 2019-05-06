@@ -1,5 +1,7 @@
 #import "headers.h"
 
+NSMutableDictionary *prefs, *defaultPrefs;
+
 // prefs values
 static bool ENABLED = YES;
 static int NUM_OPTIONS = 3;
@@ -10,8 +12,36 @@ static float SEP_WIDTH = 80;
 static float SIZE_HEIGHT = 0;
 static float WINDOW_WIDTH = 40;
 
+static float FONT_MULTIPLIER = 50;
+
+static UIColor *BACKGROUND_COLOR;// = [UIColor colorWithRed:14.0f/255.0f green:14.0f/255.0f blue:14.0f/255.0f alpha:0.8f];
+static UIColor *BORDER_COLOR;// = [UIColor colorWithRed:1 green:1 blue:1 alpha:1];
+static UIColor *SEPARATOR_COLOR;// = [UIColor colorWithRed:0.5f green:0.5f blue:0.5f alpha:1];
+
+
 static float getSizeWidth(){
-  return [UIScreen mainScreen].bounds.size.width * (WINDOW_WIDTH/100.0f);
+  // if(UIScreen != nil){
+    if([UIScreen mainScreen] != nil){
+      return [UIScreen mainScreen].bounds.size.width * (WINDOW_WIDTH/100.0f);
+    }
+  // }
+  return 0;
+}
+
+static float getFontMultiplier(){
+  return FONT_MULTIPLIER/100.0f;
+}
+
+static UIColor* sepColor(){
+  return SEPARATOR_COLOR == nil ? LCPParseColorString(@"#808080", @"#808080") : SEPARATOR_COLOR;
+}
+
+static UIColor* borderColor(){
+  return BORDER_COLOR == nil ? LCPParseColorString(@"#ffffff", @"#ffffff") : BORDER_COLOR;
+}
+
+static UIColor* bgColor(){
+  return BACKGROUND_COLOR == nil ? LCPParseColorString(@"#0e0e0e:0.8f", @"#0e0e0e:0.8f") : BACKGROUND_COLOR;
 }
 
 static CGSize theSize(){
@@ -87,11 +117,12 @@ static float MAX_DEFAULT_HEIGHT(){
       sub.indicatorStyle = UIScrollViewIndicatorStyleWhite;
       r.clipsToBounds = true;
       sub.contentSize = CGSizeMake(theSize().width, theSize().height);
+      NSLog(@"BG COLOR %@", bgColor());
 
-      sub.backgroundColor = [UIColor colorWithRed:14.0/255.0 green:14.0/255.0 blue:14.0/255.0 alpha:0.8];
+      sub.backgroundColor = bgColor();
       sub.layer.cornerRadius = theSize().width*0.05;
       sub.layer.borderWidth = 2;
-      sub.layer.borderColor = UIColor.whiteColor.CGColor;
+      sub.layer.borderColor = borderColor().CGColor;
 
       [r addSubview: sub];
     }
@@ -138,7 +169,8 @@ static float MAX_DEFAULT_HEIGHT(){
         float SEP_WIDTH = sub.superview.frame.size.width;
         if(buttonCount > 0){
           UIView* sepView = [[UIView alloc] initWithFrame:CGRectMake(SEP_WIDTH * insetPercent, (CELL_HEIGHT*buttonCount)-(thickness/2), SEP_WIDTH - (SEP_WIDTH*insetPercent*2), thickness)];
-          sepView.backgroundColor = UIColor.grayColor;
+          sepView.backgroundColor = sepColor();
+          // NSLog(@"SEP COLOR %@", sepColor());
           sepView.tag = 1022;
           [viewWithTag(self, 1020) addSubview: sepView];
         }
@@ -180,6 +212,8 @@ static float MAX_DEFAULT_HEIGHT(){
 
       ((UIScrollView*)viewWithTag(self, 1020)).frame = CGRectMake(0, 0, theSize().width, theSize().height);
       [self setFrameForSize: theSize()];
+
+      // layerBordersForAll(viewWithTag(self, 1020));
     }
     %orig;
 
@@ -254,12 +288,28 @@ static void removeAllSubviewsWithTagRecursive(UIView* superview, int tag){
   }
 }
 
--(void)configureLabel{
+// -(void)configureLabel{
+//   if(ENABLED){
+//     %orig;
+//     for(UIView* sub in self.subviews){
+//       if([sub isMemberOfClass:%c(UIButtonLabel)]){
+//         sub.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+//       }
+//     }
+//   }else{
+//     %orig;
+//   }
+// }
+
+-(void)layoutSubviews{
   if(ENABLED){
     %orig;
     for(UIView* sub in self.subviews){
       if([sub isMemberOfClass:%c(UIButtonLabel)]){
         sub.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+        ((UILabel*)sub).adjustsFontSizeToFitWidth = YES;
+        ((UILabel*)sub).minimumScaleFactor = 0.5;
+        ((UILabel*)sub).font = findAdaptiveFontWithName(((UILabel*)sub).font.fontName, sub.frame.size, 12, getFontMultiplier());
       }
     }
   }else{
@@ -267,23 +317,77 @@ static void removeAllSubviewsWithTagRecursive(UIView* superview, int tag){
   }
 }
 %end
+//https://stackoverflow.com/questions/8812192/how-to-set-font-size-to-fill-uilabel-height/17622215#17622215
+static UIFont* findAdaptiveFontWithName(NSString *fontName, CGSize labelSize, NSInteger minSize, float multiplier)
+{
+    UIFont *tempFont = nil;
+    NSString *testString = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    NSInteger tempMin = minSize;
+    NSInteger tempMax = 256;
+    NSInteger mid = 0;
+    NSInteger difference = 0;
+
+    while (tempMin <= tempMax) {
+        mid = tempMin + (tempMax - tempMin) / 2;
+        tempFont = [UIFont fontWithName:fontName size:mid];
+        difference = labelSize.height - [testString sizeWithFont:tempFont].height;
+
+        if (mid == tempMin || mid == tempMax) {
+            if (difference < 0) {
+                return [UIFont fontWithName:fontName size:(mid - 1)];
+            }
+
+            return [UIFont fontWithName:fontName size:mid*multiplier];
+        }
+
+        if (difference < 0) {
+            tempMax = mid - 1;
+        } else if (difference > 0) {
+            tempMin = mid + 1;
+        } else {
+            return [UIFont fontWithName:fontName size:mid*multiplier];
+        }
+    }
+
+    return [UIFont fontWithName:fontName size:mid*multiplier];
+}
+
+static void initPrefs() {
+	// Copy the default preferences file when the actual preference file doesn't exist
+	NSString *path = @"/var/mobile/Library/Preferences/com.satvikb.selectionplusprefs.plist";
+	NSString *pathDefault = @"/Library/PreferenceBundles/SelectionPlusPrefs.bundle/defaults.plist";
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	if (![fileManager fileExistsAtPath:path]) {
+		[fileManager copyItemAtPath:pathDefault toPath:path error:nil];
+	}
+
+	defaultPrefs = [[NSMutableDictionary alloc] initWithContentsOfFile:pathDefault];
+}
+
 
 static void loadPrefs()
 {
-    NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/com.satvikb.selectionplusprefs.plist"];
+    prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/com.satvikb.selectionplusprefs.plist"];
     if(prefs){
         ENABLED = ( [prefs objectForKey:@"EnabledSwitch"] ? [[prefs objectForKey:@"EnabledSwitch"] boolValue] : ENABLED );
         NUM_OPTIONS = ( [prefs objectForKey:@"NumOptions"] ? [[prefs objectForKey:@"NumOptions"] intValue] : NUM_OPTIONS );
         CELL_HEIGHT = ( [prefs objectForKey:@"CellHeight"] ? [[prefs objectForKey:@"CellHeight"] floatValue] : CELL_HEIGHT );
         SEP_WIDTH = ( [prefs objectForKey:@"SepWidth"] ? [[prefs objectForKey:@"SepWidth"] floatValue] : SEP_WIDTH );
         WINDOW_WIDTH = ( [prefs objectForKey:@"WindowWidth"] ? [[prefs objectForKey:@"WindowWidth"] floatValue] : WINDOW_WIDTH );
-        theSize() = CGSizeMake(getSizeWidth(), theSize().height);
-        NSLog(@"SIZE %@", NSStringFromCGSize(theSize()));
+        FONT_MULTIPLIER = ( [prefs objectForKey:@"FontMultiplier"] ? [[prefs objectForKey:@"FontMultiplier"] floatValue] : FONT_MULTIPLIER );
+
+        // theSize() = CGSizeMake(getSizeWidth(), theSize().height);
+        BACKGROUND_COLOR = LCPParseColorString([prefs objectForKey:@"BackgroundColor"], @"#0e0e0e:0.8f");
+        BORDER_COLOR = LCPParseColorString([prefs objectForKey:@"BorderColor"], @"#808080");
+        SEPARATOR_COLOR = LCPParseColorString([prefs objectForKey:@"SeparatorColor"], @"#ffffff");
+        NSLog(@"Load bg color %@", BACKGROUND_COLOR);
     }
 }
 
 %ctor {
   CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)loadPrefs, CFSTR("com.satvikb.selectionplusprefs/settingschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+  initPrefs();
   loadPrefs();
   %init();
 }
