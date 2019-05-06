@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>items</key>
+	<array>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>General</string>
+		</dict>
+		<dict>
+			<key>cell</key> 						<string>PSSwitchCell</string>
+			<key>default</key> 					<true/>
+			<key>defaults</key> 				<string>com.satvikb.selectionplusprefs</string>
+			<key>key</key> 							<string>EnabledSwitch</string>
+			<key>label</key> 						<string>Enabled</string>
+			<key>PostNotification</key> <string>com.satvikb.selectionplusprefs/settingschanged</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Number of options shown when opened</string>
+		</dict>
+		<dict>
+			<key>cell</key> 						<string>PSSliderCell</string>
+			<key>showValue</key> 				<true/>
+			<key>defaults</key> 				<string>com.satvikb.selectionplusprefs</string>
+			<key>key</key> 							<string>NumOptions</string>
+			<key>isSegmented</key> 			<true/>
+			<key>min</key> 							<integer>3</integer>
+			<key>max</key> 							<integer>8</integer>
+			<key>default</key> 					<integer>3</integer>
+			<key>segmentCount</key> 		<integer>5</integer>
+			<key>PostNotification</key> <string>com.satvikb.selectionplusprefs/settingschanged</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Individual Cell Height</string>
+		</dict>
+		<dict>
+			<key>cell</key> 						<string>PSSliderCell</string>
+			<key>showValue</key> 				<true/>
+			<key>defaults</key> 				<string>com.satvikb.selectionplusprefs</string>
+			<key>key</key> 							<string>CellHeight</string>
+			<key>min</key> 							<integer>40</integer>
+			<key>max</key> 							<integer>80</integer>
+			<key>default</key> 					<integer>40</integer>
+			<key>PostNotification</key> <string>com.satvikb.selectionplusprefs/settingschanged</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Separator line width</string>
+		</dict>
+		<dict>
+			<key>cell</key> 						<string>PSSliderCell</string>
+			<key>showValue</key> 				<true/>
+			<key>defaults</key> 				<string>com.satvikb.selectionplusprefs</string>
+			<key>key</key> 							<string>SepWidth</string>
+			<key>min</key> 							<integer>0</integer>
+			<key>max</key> 							<integer>100</integer>
+			<key>default</key> 					<integer>80</integer>
+			<key>PostNotification</key> <string>com.satvikb.selectionplusprefs/settingschanged</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Window width (as a percent of device width in portrait orientation)</string>
+		</dict>
+		<dict>
+			<key>cell</key> 						<string>PSSliderCell</string>
+			<key>showValue</key> 				<true/>
+			<key>defaults</key> 				<string>com.satvikb.selectionplusprefs</string>
+			<key>key</key> 							<string>WindowWidth</string>
+			<key>min</key> 							<integer>20</integer>
+			<key>max</key> 							<integer>95</integer>
+			<key>default</key> 					<integer>40</integer>
+			<key>PostNotification</key> <string>com.satvikb.selectionplusprefs/settingschanged</string>
+		</dict>
+	</array>
+	<key>title</key>
+	<string>Selection Plus</string>
+</dict>
+</plist>

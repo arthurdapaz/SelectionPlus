@@ -24,6 +24,10 @@ static UIView* viewWithTag(UIView* superview, int tag);
 // -(double)contentWidth;
 // -(double)contentScale;
 // @end
+
+
+static float MAX_DEFAULT_HEIGHT();
+
 @interface UIButtonLabel : UILabel
 @end
 
