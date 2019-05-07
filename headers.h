@@ -12,25 +12,17 @@
 // static void layerBordersForAllLayers(CALayer* layer);
 static void removeAllSubviewsWithTagRecursive(UIView* superview, int tag);
 static UIView* viewWithTag(UIView* superview, int tag);
-// @interface UICalloutBarButton : UIButton
-// -(void)setPage:(long long)arg1;
-// -(long long)page;
-//
-// -(void)setupWithTitle:(id)arg1 subtitle:(id)arg2 maxWidth:(double)arg3 action:(SEL)arg4 type:(int)arg5 ;
-// -(void)setupWithTitle:(id)arg1 action:(SEL)arg2 type:(int)arg3 ;
-// -(void)setupWithImage:(id)arg1 action:(SEL)arg2 type:(int)arg3 ;
-// -(void)_commonSetupWithAction:(SEL)arg1 type:(int)arg2 ;
-// -(CGRect)adjustRectForPosition:(CGRect)arg1 scaleRect:(bool)arg2;
-// -(void)configureLabel;
-// -(double)contentWidth;
-// -(double)contentScale;
-// @end
+// static NSMutableArray<UIView*>* viewsWithTag(UIView* superview, int tag);
 
+static void loadPrefs();
+static void initPrefs();
 
 static float MAX_DEFAULT_HEIGHT();
 static UIColor* sepColor();
 static UIColor* borderColor();
 static UIColor* bgColor();
+
+static UIFont* findAdaptiveFontWithName(NSString *fontName, CGSize labelSize, NSInteger minSize, float multiplier);
 
 @interface UIButtonLabel : UILabel
 @end
@@ -46,12 +38,29 @@ static UIColor* bgColor();
 @property (assign,nonatomic) CGPoint pointLeftOfControls;
 @property (assign,nonatomic) CGPoint pointRightOfControls;
 
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event;
+-(CGPoint)targetPoint;
+
+
+/*
+  0 - arrow on left
+  1 - arrow on bottom
+  2 - arrow on top
+  3 - arrow on right
+*/
+-(int)targetDirection;
+
+
+
+-(void)updateAnimated:(bool)arg1;
+-(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event;
 
 -(id)initWithFrame:(CGRect)arg1;
 -(bool)setFrameForSize:(CGSize)arg1;
 +(void)fadeSharedCalloutBar;
++(void)hideSharedCalloutBar;
 +(id)sharedCalloutBar;
+
+-(bool)recentlyFaded;
 
 - (void)buttonHighlighted:(id)arg1 highlighted:(bool)arg2;
 - (void)didAddSubview:(UIView *)subview;
@@ -62,10 +71,22 @@ static UIColor* bgColor();
 
 @end
 
-static UIFont* findAdaptiveFontWithName(NSString *fontName, CGSize labelSize, NSInteger minSize, float multiplier);
+@interface UICalloutBar (SelectionPlus)
+-(float)getSizeWidth;
+
+// -(void)updateColor;
+//
+@end
+
 
 @interface UICalloutBarBackground : UIView {
 	bool m_isDisplayingVertically;
 	UIVisualEffectView* _separatorView;
 }
 @end
+
+// @interface UIMenuController : NSObject
+// -(BOOL)isMenuVisible;
+// -(void)setMenuVisible:(BOOL)arg1 animated:(BOOL)arg2 ;
+// -(void)setMenuVisible:(BOOL)arg1 ;
+// @end

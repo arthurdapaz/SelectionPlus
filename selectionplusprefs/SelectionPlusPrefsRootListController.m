@@ -18,13 +18,13 @@
 }
 
 - (id)readPreferenceValue:(PSSpecifier*)specifier {
-	NSString *path = [NSString stringWithFormat:@"/User/Library/Preferences/%@.plist", specifier.properties[@"defaults"]];
+	NSString *path = [NSString stringWithFormat:@"/var/mobile/Library/Preferences/%@.plist", specifier.properties[@"defaults"]];
 	NSDictionary *settings = [NSDictionary dictionaryWithContentsOfFile:path];
 	return (settings[specifier.properties[@"key"]]) ?: specifier.properties[@"default"];
 }
 
 - (void)setPreferenceValue:(id)value specifier:(PSSpecifier*)specifier {
-	NSString *path = [NSString stringWithFormat:@"/User/Library/Preferences/%@.plist", specifier.properties[@"defaults"]];
+	NSString *path = [NSString stringWithFormat:@"/var/mobile/Library/Preferences/%@.plist", specifier.properties[@"defaults"]];
 	NSMutableDictionary *settings = [NSMutableDictionary dictionaryWithContentsOfFile:path];
 	[settings setObject:value forKey:specifier.properties[@"key"]];
 	[settings writeToFile:path atomically:YES];
@@ -35,7 +35,7 @@
 }
 
 -(void)paypal {
-	[[UIApplication sharedApplication] openURL:[NSURL URLWithString: @"https://www.paypal.me/"] options:@{} completionHandler:nil];
+	[[UIApplication sharedApplication] openURL:[NSURL URLWithString: @"https://www.paypal.me/virindh"] options:@{} completionHandler:nil];
 }
 
 -(void)respring {
@@ -48,7 +48,7 @@
 	UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Warning!" message:@"Do you want to reset all settings to their default values?" preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *yesAction = [UIAlertAction actionWithTitle:@"Yes" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         NSFileManager *manager = [NSFileManager defaultManager];
-        [manager removeItemAtPath:@"/User/Library/Preferences/com.noisyflake.magma.plist" error:nil];
+        [manager removeItemAtPath:@"/var/mobile/Library/Preferences/com.satvikb.selectionplusprefs.plist" error:nil];
 
         [self respring];
     }];
@@ -84,7 +84,7 @@
 		tweakName.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
 		tweakName.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:40.0f];
 		tweakName.textColor = [UIColor whiteColor];
-		tweakName.text = @"Selection Plus";
+		tweakName.text = @"SelectionPlus";
 		tweakName.textAlignment = NSTextAlignmentCenter;
 
 		CGRect versionFrame = CGRectMake(0, -5, width, height);

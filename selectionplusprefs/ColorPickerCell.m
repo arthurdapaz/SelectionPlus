@@ -82,8 +82,8 @@
     NSString *color = [_prefs valueForKey:[self.specifier propertyForKey:@"key"]];
 
     if (color == nil) {
-      NSLog(@"COLOR NIL");
-        color = @"#808080";
+      // NSLog(@"COLOR NIL");
+      color = @"#808080";
         // color = [_prefs valueForKey:[self.specifier propertyForKey:@"fallback"]];
         // NSLog(@"COLOR NIL 3 %@ %@ %@ %@ %@", color, [_prefs valueForKey:[self.specifier propertyForKey:@"fallback"]], [self.specifier properties], [self.specifier propertyForKey:@"key"], self.specifier);
     }

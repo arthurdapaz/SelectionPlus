@@ -17,6 +17,8 @@
   <integer>40</integer>
   <key>FontMultiplier</key>
   <integer>50</integer>
+	<key>TextAlignment</key>
+  <integer>2</integer>
 	<key>BackgroundColor</key>
 	<string>#0e0e0e:0.8f</string>
   <key>BorderColor</key>
