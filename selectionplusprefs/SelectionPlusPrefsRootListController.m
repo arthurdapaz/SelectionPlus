@@ -38,6 +38,40 @@
 	[[UIApplication sharedApplication] openURL:[NSURL URLWithString: @"https://www.paypal.me/virindh"] options:@{} completionHandler:nil];
 }
 
+-(void)sourceCode {
+	[[UIApplication sharedApplication] openURL:[NSURL URLWithString: @"https://github.com/satvikb/SelectionPlus"] options:@{} completionHandler:nil];
+}
+
+-(void)credits {
+  UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Credits" message:@"u/SatvikbDev\nu/NepetaDev\nu/NoisyFlake\nu/ebaad1009\nu/Altec2001" preferredStyle:UIAlertControllerStyleAlert];
+  UIAlertAction *doneAction = [UIAlertAction actionWithTitle:@"Done" style:UIAlertActionStyleDefault handler:nil];
+  [alert addAction:doneAction];
+  [self presentViewController:alert animated:YES completion:nil];
+}
+
+-(void)todo {
+  vc = [[UIViewController alloc] init];
+  UIWebView* webView = [[UIWebView alloc] initWithFrame: CGRectMake(0, 20, self.view.frame.size.width, self.view.frame.size.height)];
+  // webView.delegate = self
+  [vc.view addSubview:webView];
+
+  navigation = [[UINavigationController alloc] initWithRootViewController:vc];
+
+  UIBarButtonItem *exitButton = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(dismissNavigation)];
+  vc.navigationItem.leftBarButtonItem = exitButton;
+
+  NSString *urlString = @"http://www.satvik.co/SelectionPlusTodo.html";
+  NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+  NSURLRequest *urlRequest = [NSURLRequest requestWithURL:url];
+  [webView loadRequest:urlRequest];
+
+  [self presentViewController:navigation animated:YES completion:nil];
+}
+
+-(void) dismissNavigation{
+  [navigation dismissViewControllerAnimated:YES completion: nil];
+}
+
 -(void)respring {
 	pid_t pid;
 	const char* args[] = {"killall", "-9", "backboardd", NULL};
@@ -93,7 +127,7 @@
 		version.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
 		version.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:15.0f];
 		version.textColor = [UIColor whiteColor];
-		version.text = @"Version 0.1";
+		version.text = @"Version 1.0 Beta";
 		version.backgroundColor = [UIColor clearColor];
 		version.textAlignment = NSTextAlignmentCenter;
 

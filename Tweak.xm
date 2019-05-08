@@ -124,11 +124,6 @@ static CGSize theSize(){
 }
 
 %hook UICalloutBar
-// -(id)initWithFrame:(CGRect)arg1{
-  // NSLog(@"CB INIT");
-  // CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, self.updateColor, CFSTR("com.satvikb.selectionplusprefs/settingschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
-  // return %orig;
-// }
 
 -(id)hitTest:(CGPoint)arg1 withEvent:(id)arg2  {
   if(ENABLED){
@@ -141,8 +136,13 @@ static CGSize theSize(){
             UIView *hitTestView = [subview hitTest:convertedPoint withEvent:arg2];
             if (hitTestView) {
                 if([hitTestView isMemberOfClass:%c(UICalloutBarButton)]){
-                  NSLog(@"Highlight");
-                  [self buttonHighlighted: hitTestView highlighted: true];
+                  [UIView animateWithDuration:0.2f delay:0 options:(UIViewAnimationOptionCurveLinear | UIViewAnimationOptionAllowUserInteraction)  animations:^{
+                      hitTestView.layer.backgroundColor = UIColor.whiteColor.CGColor;
+                  } completion:^(BOOL finished) {
+                      [UIView animateWithDuration:0.2f delay:0 options:(UIViewAnimationOptionCurveLinear | UIViewAnimationOptionAllowUserInteraction)  animations:^{
+                          hitTestView.layer.backgroundColor = UIColor.clearColor.CGColor;
+                      } completion:nil];
+                  }];
                 }
                 return hitTestView;
             }
@@ -154,11 +154,6 @@ static CGSize theSize(){
     return %orig;
   }
 }
-
-// -(void)updateAnimated:(bool)arg1{
-//   NSLog(@"Update animated %i", arg1);
-//   %orig;
-// }
 
 -(bool)setFrameForSize:(CGSize)arg1  {
   if(ENABLED){
@@ -192,16 +187,13 @@ static CGSize theSize(){
   }
 }
 
-// -(void)setTargetHorizontal:(bool)arg1{
-//   %orig(0);
-// }
+-(void)setTargetHorizontal:(bool)arg1{
+  %orig(0);
+}
 
 +(id)sharedCalloutBar {
   UICalloutBar* r = %orig;
   if(ENABLED){
-    // targetPoint = r.targetPoint;
-    // targetDirection = r.targetDirection;
-
     MSHookIvar<UIView *>(r, "m_nextButton").hidden = YES;
     MSHookIvar<UIView *>(r, "m_previousButton").hidden = YES;
 
@@ -212,7 +204,6 @@ static CGSize theSize(){
       sub.indicatorStyle = UIScrollViewIndicatorStyleWhite;
       r.clipsToBounds = true;
       sub.contentSize = CGSizeMake(windowSize.width, windowSize.height);
-      // NSLog(@"size %@", NSStringFromCGSize(windowSize));
 
       sub.backgroundColor = bgColor();
       sub.layer.borderWidth = 2;
@@ -223,29 +214,9 @@ static CGSize theSize(){
 
     return r;
   }else{
-    // if(viewWithTag(r, 1020) != nil){
-    //   MSHookIvar<UIView *>(r, "m_nextButton").hidden = NO;
-    //   MSHookIvar<UIView *>(r, "m_previousButton").hidden = NO;
-    //   [[r viewWithTag: 1020] removeFromSuperview];
-    // }
     return %orig;
   }
 }
-
-// +(void)hideSharedCalloutBar{
-//   NSLog(@"HIDE SHARED");
-//   %orig;
-// }
-//
-// +(void)fadeSharedCalloutBar{
-//   NSLog(@"FADE");
-//   %orig;
-// }
-//
-// -(bool)recentlyFaded{
-//   NSLog(@"RECENTLY FADE");
-//   return %orig;
-// }
 
 -(void)shrinkButtonTextSize:(id)arg1  {
   if(ENABLED == NO){
@@ -256,31 +227,23 @@ static CGSize theSize(){
 -(int)targetDirection{
   int dir = %orig;
   targetDirection = dir;
-  // NSLog(@"direction %i", dir);
   return dir;//targetPoint.y > ([UIScreen mainScreen].bounds.size.height - targetPoint.y) ? 2 : 1;
 }
 
 -(void)setTargetPoint:(CGPoint)arg1{
   targetPoint = arg1;
-  // NSLog(@"TP %@", NSStringFromCGPoint(arg1));
   %orig;
 }
 -(CGPoint)targetPoint{
   CGPoint point = %orig;
   targetPoint = point;
-  // NSLog(@"point %@", NSStringFromCGPoint(point));
   return point;
 }
 
 -(void)updateForCurrentPage {
   if(ENABLED){
-    // targetPoint = self.targetPoint;
-    // targetDirection = self.targetDirection;
-
     for(UIView* sub in self.subviews){
       if([sub isMemberOfClass:%c(UICalloutBarBackground)]){
-        // sub.hidden = YES;
-
         MSHookIvar<UIView *>(sub, "_separatorView").hidden = YES;
         MSHookIvar<UIView *>(sub, "_blurView").hidden = YES;
         UIView* tint = MSHookIvar<UIView *>(sub, "_tintView");
@@ -300,7 +263,6 @@ static CGSize theSize(){
         if(buttonCount > 0){
           UIView* sepView = [[UIView alloc] initWithFrame:CGRectMake(SEP_WIDTH * insetPercent, (CELL_HEIGHT*buttonCount)-(thickness/2), SEP_WIDTH - (SEP_WIDTH*insetPercent*2), thickness)];
           sepView.backgroundColor = sepColor();
-          // NSLog(@"SEP COLOR %@", sepColor());
           sepView.tag = 1022;
           [viewWithTag(self, 1020) addSubview: sepView];
         }
@@ -316,11 +278,6 @@ static CGSize theSize(){
             labelView.frame = newLabelFrame;
             labelView.numberOfLines = 2;
           }
-
-          // if([sub2 isMemberOfClass:%c(UIImageView)]){
-          //   HBLogDebug(@"IMAGE VIEW FOUND");
-          // }
-
         }
 
         if(sub.hidden == NO){
@@ -330,24 +287,21 @@ static CGSize theSize(){
         if(sub.superview.tag != 1020){
           [sub removeFromSuperview];
           [viewWithTag(self, 1020) addSubview: sub];
-
         }
       }
     }
 
     ((UIScrollView*)viewWithTag(self, 1020)).contentSize = CGSizeMake(theSize().width, buttonCount*CELL_HEIGHT);
+    [((UIScrollView*)viewWithTag(self, 1020)) flashScrollIndicators];
 
     if(viewWithTag(self, 1020) != nil){
       float max = MAX_DEFAULT_HEIGHT();
       SIZE_HEIGHT = (buttonCount*CELL_HEIGHT) < max ? (buttonCount*CELL_HEIGHT) : max;
 
       CGSize winSize = theSize();
-      // NSLog(@"SETTING SIZE: %@", NSStringFromCGSize(winSize));
       ((UIScrollView*)viewWithTag(self, 1020)).frame = CGRectMake(0, 0, winSize.width, winSize.height);
       ((UIScrollView*)viewWithTag(self, 1020)).layer.cornerRadius = winSize.width*0.05;
       [self setFrameForSize: winSize];
-
-      // layerBordersForAll(viewWithTag(self, 1020));
     }
     %orig;
 
@@ -355,21 +309,6 @@ static CGSize theSize(){
     %orig;
   }
 }
-
-// %new
-// -(void)updateColor{
-//   if(viewWithTag(self, 1020) != nil){
-//     viewWithTag(self, 1020).backgroundColor = bgColor();
-//     viewWithTag(self, 1020).layer.borderColor = borderColor().CGColor;
-//   }
-//
-//   UIColor *sepCol = sepColor();
-//   for(UIView *sub in viewsWithTag(self, 1022)){
-//     sub.backgroundColor = sepCol;
-//   }
-//
-// }
-
 %end
 
 static UIView* viewWithTag(UIView* superview, int tag){
@@ -382,17 +321,6 @@ static UIView* viewWithTag(UIView* superview, int tag){
   return nil;
 }
 
-// static NSMutableArray<UIView*>* viewsWithTag(UIView* superview, int tag){
-//   NSMutableArray<UIView*> *views = [[NSMutableArray alloc] init];
-//   for(UIView *s in superview.subviews){
-//     if(s.tag == tag){
-//       [views addObject:s];
-//     }
-//     [views addObjectsFromArray: viewsWithTag(s, tag)];
-//   }
-//   return views;
-// }
-
 static void removeAllSubviewsWithTagRecursive(UIView* superview, int tag){
   for(UIView *s in superview.subviews){
     if(s.tag == tag){
@@ -401,26 +329,6 @@ static void removeAllSubviewsWithTagRecursive(UIView* superview, int tag){
     removeAllSubviewsWithTagRecursive(s, tag);
   }
 }
-
-//
-// static void layerBordersForAll(UIView* view){
-//   for(UIView* sub in view.subviews){
-//     sub.layer.borderColor = UIColor.cyanColor.CGColor;
-//     sub.layer.borderWidth = 1;
-//
-//     layerBordersForAll(sub);
-//   }
-// }
-//
-//
-// static void layerBordersForAllLayers(CALayer* layer){
-//   for(CALayer* sub in layer.sublayers){
-//     sub.borderColor = UIColor.cyanColor.CGColor;
-//     sub.borderWidth = 1;
-//
-//     layerBordersForAllLayers(sub);
-//   }
-// }
 
 %hook UICalloutBarButton
 -(void)setPage:(long long)arg1{
@@ -439,33 +347,37 @@ static void removeAllSubviewsWithTagRecursive(UIView* superview, int tag){
   }
 }
 
-// -(void)configureLabel{
-//   if(ENABLED){
-//     %orig;
-//     for(UIView* sub in self.subviews){
-//       if([sub isMemberOfClass:%c(UIButtonLabel)]){
-//         sub.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
-//       }
-//     }
-//   }else{
-//     %orig;
-//   }
-// }
+-(void)fadeAndSendAction{
+  %orig;
+
+  // [UIView animateWithDuration:0.25f delay:0 options:(UIViewAnimationOptionCurveLinear | UIViewAnimationOptionAllowUserInteraction)  animations:^{
+  //     self.layer.backgroundColor = UIColor.whiteColor.CGColor;
+  // } completion:^(BOOL finished) {
+  //     [UIView animateWithDuration:0.25f delay:0 options:(UIViewAnimationOptionCurveLinear | UIViewAnimationOptionAllowUserInteraction)  animations:^{
+  //         self.layer.backgroundColor = UIColor.clearColor.CGColor;
+  //     } completion:nil];
+  // }];
+}
 
 -(void)layoutSubviews{
   if(ENABLED){
     %orig;
-    self.showsTouchWhenHighlighted = TRUE;
+
     for(UIView* sub in self.subviews){
       if([sub isMemberOfClass:%c(UIButtonLabel)]){
         float widthInsetPercent = 0.02;
         float width = self.frame.size.width;
         sub.frame = CGRectMake(width*widthInsetPercent, 0, width*(1.0f-(widthInsetPercent*2)), self.frame.size.height);
         ((UILabel*)sub).adjustsFontSizeToFitWidth = YES;
-        // ((UILabel*)sub).minimumScaleFactor = 0.5;
         sub.backgroundColor = UIColor.clearColor;
         ((UILabel*)sub).textAlignment = TEXT_ALIGNMENT == 1 ? NSTextAlignmentLeft : TEXT_ALIGNMENT == 2 ? NSTextAlignmentCenter : TEXT_ALIGNMENT == 3 ? NSTextAlignmentRight : NSTextAlignmentCenter; // default center
-        ((UILabel*)sub).font = findAdaptiveFontWithName(/*((UILabel*)sub).font.fontName*/@"HelveticaNeue-Light", sub.frame.size, 1, getFontMultiplier());
+        ((UILabel*)sub).font = findAdaptiveFontWithName(((UILabel*)sub).font.fontName/*@"HelveticaNeue-Light"*/, sub.frame.size, 1, getFontMultiplier());
+      }else if([sub isMemberOfClass:%c(UIImageView)]){
+        float fontMult = getFontMultiplier();
+        float width = self.frame.size.width;
+        float height = self.frame.size.height*fontMult;
+        sub.frame = CGRectMake(0, height/2, width, height);
+        ((UIImageView*)sub).contentMode = UIViewContentModeScaleAspectFit;
       }
     }
   }else{
@@ -473,40 +385,6 @@ static void removeAllSubviewsWithTagRecursive(UIView* superview, int tag){
   }
 }
 %end
-
-
-%hook UIMenuController
--(id)init{
-  NSLog(@"MC Init");
-  return %orig;
-}
--(BOOL)isMenuVisible{
-  bool b = %orig;
-  NSLog(@"Is menu vis %i", b);
-  return b;
-}
--(void)setMenuVisible:(BOOL)arg1 animated:(BOOL)arg2{
-  NSLog(@"set menu visible anim %i %i", arg1, arg2);
-  %orig;
-}
-
--(void)setMenuVisible:(BOOL)arg1{
-  NSLog(@"set menu visible %i", arg1);
-
-  %orig;
-}
-
--(BOOL)_menuHidden{
-  bool h = %orig;
-  NSLog(@"menu hidden %i", h);
-  return h;
-}
-%end
-
-
-
-
-
 
 //https://stackoverflow.com/questions/8812192/how-to-set-font-size-to-fill-uilabel-height/17622215#17622215
 static UIFont* findAdaptiveFontWithName(NSString *fontName, CGSize labelSize, NSInteger minSize, float multiplier)
