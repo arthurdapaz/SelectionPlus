@@ -1,9 +1,9 @@
 Package: com.satvikb.selectionplus
-Name: Selection Plus
+Name: SelectionPlus
 Depends: mobilesubstrate
-Version: 0.0.1
+Version: 1.0
 Architecture: iphoneos-arm
-Description: An awesome MobileSubstrate tweak!
+Description: Make the text selection window yours!
 Maintainer: Satvik
 Author: Satvik
 Section: Tweaks
